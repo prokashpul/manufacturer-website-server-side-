@@ -47,9 +47,17 @@ const run = async () => {
       const result = await tools.toArray();
       res.send(result);
     });
+    // login post api
+    app.post("/login", async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_CODE, {
+        expiresIn: 60 * 60,
+      });
+      res.send({ accessToken: token });
+    });
     //user api create put
 
-    app.put("/user/:email", async (req, res) => {
+    app.put("/user/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
       const user = req.body;
       const filter = { email: email };
@@ -58,10 +66,7 @@ const run = async () => {
         $set: user,
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
-      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_CODE, {
-        expiresIn: 60 * 60,
-      });
-      res.send({ result, accessToken: token });
+      res.send(result);
     });
   } finally {
   }
