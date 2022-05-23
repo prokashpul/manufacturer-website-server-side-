@@ -4,7 +4,7 @@ require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 5000;
-
+const jwt = require("jsonwebtoken");
 //middleware
 app.use(cors());
 app.use(express.json());
@@ -18,6 +18,21 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+// jwt Token verify
+const verifyJWT = (req, res, next) => {
+  const authorization = req.headers?.authorization;
+  if (!authorization) {
+    return res.status(401).send({ message: "UnAuthorization Access" });
+  }
+  const token = authorization?.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_CODE, function (err, decoded) {
+    if (err) {
+      return res.status(403).send({ message: "Forbidden Access" });
+    }
+    req.decoded = decoded;
+    next();
+  });
+};
 
 const run = async () => {
   try {
@@ -43,8 +58,10 @@ const run = async () => {
         $set: user,
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
-
-      res.send(result);
+      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_CODE, {
+        expiresIn: 60 * 60,
+      });
+      res.send({ result, accessToken: token });
     });
   } finally {
   }
