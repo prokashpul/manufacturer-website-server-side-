@@ -3,6 +3,9 @@
 > - Live Site Link : https://electric-tools-manufacturer.web.app
 > - server : https://electric-tools-server.herokuapp.com/
 
+> - Live Site Link : https://electric-tools-manufacturer.web.app
+> - server side github :
+
 ## Technology Used ( Packages Install )
 
 > - npm init
