@@ -11,7 +11,7 @@ app.use(express.json());
 
 //mongodb
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.l6pul.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -46,6 +46,13 @@ const run = async () => {
       const tools = toolsCollection.find({});
       const result = await tools.toArray();
       res.send(result);
+    });
+    //get tools api
+    app.get("/purchase/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const item = await toolsCollection.findOne(query);
+      res.send(item);
     });
     // login post api
     app.post("/login", async (req, res) => {
