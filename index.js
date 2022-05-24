@@ -54,13 +54,13 @@ const run = async () => {
       const item = await toolsCollection.findOne(query);
       res.send(item);
     });
-    //user api
+    //user get api
     app.get("/user/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
       const result = await userCollection.findOne({ email: email });
       res.send(result);
     });
-    //user api
+    //user get api
     app.get("/users", verifyJWT, async (req, res) => {
       const result = await userCollection.find({}).toArray();
       res.send(result);
@@ -85,6 +85,12 @@ const run = async () => {
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
       res.send(result);
+    });
+    //get tools api
+    app.post("/tools", verifyJWT, async (req, res) => {
+      const query = req.body;
+      const tool = toolsCollection.insertOne(query);
+      res.send(tool);
     });
     //Admin api create put
 
