@@ -66,8 +66,13 @@ const run = async () => {
       const result = await userCollection.find({}).toArray();
       res.send(result);
     });
+    //get review api
+    app.get("/review", async (req, res) => {
+      const reviews = await reviewCollection.find({}).toArray();
+      res.send(reviews);
+    });
     // login post api
-    app.post("/login", async (req, res) => {
+    app.post("/login", (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_CODE, {
         expiresIn: "1d",
@@ -77,14 +82,14 @@ const run = async () => {
     //get tools api
     app.post("/tools", verifyJWT, async (req, res) => {
       const query = req.body;
-      const tool = toolsCollection.insertOne(query);
+      const tool = await toolsCollection.insertOne(query);
       res.send(tool);
     });
-    //get tools api
+    //post review api
     app.post("/user/review", verifyJWT, async (req, res) => {
       const query = req.body;
-      const tool = reviewCollection.insertOne(query);
-      res.send(tool);
+      const review = await reviewCollection.insertOne(query);
+      res.send(review);
     });
     //user api create put
 
