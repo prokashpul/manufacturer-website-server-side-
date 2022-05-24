@@ -40,6 +40,7 @@ const run = async () => {
 
     const toolsCollection = client.db("toolsManager").collection("tools");
     const userCollection = client.db("toolsManager").collection("users");
+    const reviewCollection = client.db("toolsManager").collection("reviews");
 
     //get tools api
     app.get("/tools", async (req, res) => {
@@ -73,6 +74,18 @@ const run = async () => {
       });
       res.send({ accessToken: token });
     });
+    //get tools api
+    app.post("/tools", verifyJWT, async (req, res) => {
+      const query = req.body;
+      const tool = toolsCollection.insertOne(query);
+      res.send(tool);
+    });
+    //get tools api
+    app.post("/user/review", verifyJWT, async (req, res) => {
+      const query = req.body;
+      const tool = reviewCollection.insertOne(query);
+      res.send(tool);
+    });
     //user api create put
 
     app.put("/user/:email", verifyJWT, async (req, res) => {
@@ -86,12 +99,7 @@ const run = async () => {
       const result = await userCollection.updateOne(filter, updateDoc, options);
       res.send(result);
     });
-    //get tools api
-    app.post("/tools", verifyJWT, async (req, res) => {
-      const query = req.body;
-      const tool = toolsCollection.insertOne(query);
-      res.send(tool);
-    });
+
     //Admin api create put
 
     app.put("/user/admin/:email", verifyJWT, async (req, res) => {
