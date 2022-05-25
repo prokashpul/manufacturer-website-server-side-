@@ -41,6 +41,7 @@ const run = async () => {
     const toolsCollection = client.db("toolsManager").collection("tools");
     const userCollection = client.db("toolsManager").collection("users");
     const reviewCollection = client.db("toolsManager").collection("reviews");
+    const purchaseCollection = client.db("toolsManager").collection("order");
 
     //get tools api
     app.get("/tools", async (req, res) => {
@@ -85,11 +86,34 @@ const run = async () => {
       const tool = await toolsCollection.insertOne(query);
       res.send(tool);
     });
+    //get tools api
+    app.post("/purchase", verifyJWT, async (req, res) => {
+      const query = req.body;
+      const order = await purchaseCollection.insertOne(query);
+      res.send(order);
+    });
     //post review api
     app.post("/user/review", verifyJWT, async (req, res) => {
       const query = req.body;
       const review = await reviewCollection.insertOne(query);
       res.send(review);
+    });
+    //put tools api
+    app.put("/tools/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const tool = req.body;
+      console.log(tool);
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: { quantity: tool?.tool?.quantity },
+      };
+      const result = await toolsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
     });
     //user api create put
 
