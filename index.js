@@ -50,6 +50,14 @@ const run = async () => {
       res.send(result);
     });
     //get tools api
+    app.get("/myOrders/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const tools = purchaseCollection.find(query);
+      const result = await tools.toArray();
+      res.send(result);
+    });
+    //get tools api
     app.get("/purchase/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
