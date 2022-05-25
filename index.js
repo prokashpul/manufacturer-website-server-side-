@@ -49,7 +49,13 @@ const run = async () => {
       const result = await tools.toArray();
       res.send(result);
     });
-    //get tools api
+    //get All order api
+    app.get("/all-orders", async (req, res) => {
+      const tools = purchaseCollection.find({});
+      const result = await tools.toArray();
+      res.send(result);
+    });
+    //get myOrders api
     app.get("/myOrders/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
@@ -161,13 +167,19 @@ const run = async () => {
       res.send(result);
     });
     //Order cancel api create put
-    app.put("/order/cancel/:id", verifyJWT, async (req, res) => {
+    app.put("/order/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
+      const order = req.body;
+      const options = { upsert: true };
       const updateDoc = {
-        $set: { payment: "cancel" },
+        $set: order,
       };
-      const result = await purchaseCollection.updateOne(filter, updateDoc);
+      const result = await purchaseCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
       res.send(result);
     });
   } finally {
