@@ -154,10 +154,20 @@ const run = async () => {
       const email = req.params.email;
       const filter = { email: email };
       const updateDoc = {
-        $set: { role: "null" },
+        $set: { role: "User" },
       };
       const result = await userCollection.updateOne(filter, updateDoc);
-      console.log(updateDoc);
+
+      res.send(result);
+    });
+    //Order cancel api create put
+    app.put("/order/cancel/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: { payment: "cancel" },
+      };
+      const result = await purchaseCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
   } finally {
