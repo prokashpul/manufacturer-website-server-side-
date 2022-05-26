@@ -151,6 +151,7 @@ const run = async () => {
       res.send(review);
     });
     //post card ifo
+
     app.post("/create-payment-intent", verifyJWT, async (req, res) => {
       const tool = req.body;
       const price = tool?.totalPrice;
