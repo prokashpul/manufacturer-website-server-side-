@@ -43,6 +43,17 @@ const run = async () => {
     const reviewCollection = client.db("toolsManager").collection("reviews");
     const purchaseCollection = client.db("toolsManager").collection("order");
 
+    ///
+    const adminVerify = async (req, res, next) => {
+      const decodedEmail = req.decoded.email;
+      const required = await userCollection.findOne({ email: decodedEmail });
+      if (required.role === "admin") {
+        next();
+      } else {
+        return res.status(403).send({ message: "Forbidden access" });
+      }
+    };
+
     //get tools api
     app.get("/tools", async (req, res) => {
       const tools = toolsCollection.find({});
@@ -143,6 +154,13 @@ const run = async () => {
       res.send(result);
     });
 
+    // admin user api
+    app.get("/admin/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      const user = await userCollection.findOne({ email: email });
+      const isAdmin = user.role === "admin";
+      res.send({ admin: isAdmin });
+    });
     //Admin api create put
 
     app.put("/user/admin/:email", verifyJWT, async (req, res) => {
