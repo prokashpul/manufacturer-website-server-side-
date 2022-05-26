@@ -150,7 +150,7 @@ const run = async () => {
       const review = await reviewCollection.insertOne(query);
       res.send(review);
     });
-    //post card ifo
+    //post card info
 
     app.post("/create-payment-intent", verifyJWT, async (req, res) => {
       const tool = req.body;
@@ -168,7 +168,7 @@ const run = async () => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const tool = req.body;
-      console.log(tool);
+      // console.log(tool);
       const options = { upsert: true };
       const updateDoc = {
         $set: { quantity: tool?.tool?.quantity },
@@ -198,7 +198,7 @@ const run = async () => {
     app.get("/admin/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
       const user = await userCollection.findOne({ email: email });
-      const isAdmin = user.role === "admin";
+      const isAdmin = user?.role === "admin";
       res.send({ admin: isAdmin });
     });
     //Admin api create put
@@ -243,7 +243,7 @@ const run = async () => {
     // booking get api create
     app.patch("/order/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
-      const payment = req.body;
+      const payment = req?.body;
       const filter = { _id: ObjectId(id) };
       const updateDoc = {
         $set: {
