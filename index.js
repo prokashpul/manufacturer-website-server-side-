@@ -5,6 +5,7 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 const jwt = require("jsonwebtoken");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 //middleware
 app.use(cors());
 app.use(express.json());
@@ -88,6 +89,13 @@ const run = async () => {
       const item = await toolsCollection.findOne(query);
       res.send(item);
     });
+    //get tools api
+    app.get("/order/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const item = await purchaseCollection.findOne(query);
+      res.send(item);
+    });
     //user get api
     app.get("/user/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
@@ -117,6 +125,7 @@ const run = async () => {
       });
       res.send({ accessToken: token });
     });
+
     //get tools api
     app.post("/tools", verifyJWT, async (req, res) => {
       const query = req.body;
@@ -140,6 +149,18 @@ const run = async () => {
       const query = req.body;
       const review = await reviewCollection.insertOne(query);
       res.send(review);
+    });
+    //post card ifo
+    app.post("/create-payment-intent", verifyJWT, async (req, res) => {
+      const tool = req.body;
+      const price = tool?.totalPrice;
+      const amount = price * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+      res.send({ clientSecret: paymentIntent.client_secret });
     });
     //put tools api
     app.put("/tools/:id", verifyJWT, async (req, res) => {
@@ -217,6 +238,20 @@ const run = async () => {
         options
       );
       res.send(result);
+    });
+    // booking get api create
+    app.patch("/order/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const payment = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          payment: "paid",
+          transitionId: payment.transitionId,
+        },
+      };
+      const booking = await purchaseCollection.updateOne(filter, updateDoc);
+      res.send(updateDoc);
     });
     //delete api tools
 
