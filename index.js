@@ -47,7 +47,7 @@ const run = async () => {
     const adminVerify = async (req, res, next) => {
       const decodedEmail = req.decoded.email;
       const required = await userCollection.findOne({ email: decodedEmail });
-      if (required.role === "admin") {
+      if (required?.role === "admin") {
         next();
       } else {
         return res.status(403).send({ message: "Forbidden access" });
@@ -61,7 +61,7 @@ const run = async () => {
       res.send(result);
     });
     //get tools api
-    app.get("/manageTools", verifyJWT, adminVerify, async (req, res) => {
+    app.get("/manageTools", verifyJWT, async (req, res) => {
       const tools = toolsCollection.find({});
       const result = await tools.toArray();
       res.send(result);
@@ -204,6 +204,14 @@ const run = async () => {
         updateDoc,
         options
       );
+      res.send(result);
+    });
+    //delete api tools
+
+    app.delete("/manageTools/delete/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await toolsCollection.deleteOne(filter);
       res.send(result);
     });
   } finally {
