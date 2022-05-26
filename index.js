@@ -42,6 +42,7 @@ const run = async () => {
     const userCollection = client.db("toolsManager").collection("users");
     const reviewCollection = client.db("toolsManager").collection("reviews");
     const purchaseCollection = client.db("toolsManager").collection("order");
+    const blogCollection = client.db("toolsManager").collection("posts");
 
     ///
     const adminVerify = async (req, res, next) => {
@@ -103,6 +104,11 @@ const run = async () => {
       const reviews = await reviewCollection.find({}).toArray();
       res.send(reviews);
     });
+    //get review api
+    app.get("/blogs", async (req, res) => {
+      const post = await blogCollection.find({}).toArray();
+      res.send(post);
+    });
     // login post api
     app.post("/login", (req, res) => {
       const user = req.body;
@@ -116,6 +122,12 @@ const run = async () => {
       const query = req.body;
       const tool = await toolsCollection.insertOne(query);
       res.send(tool);
+    });
+    //get tools api
+    app.post("/blogs", verifyJWT, async (req, res) => {
+      const query = req.body;
+      const post = await blogCollection.insertOne(query);
+      res.send(post);
     });
     //get tools api
     app.post("/purchase", verifyJWT, async (req, res) => {
