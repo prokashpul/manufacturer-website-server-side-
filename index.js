@@ -60,6 +60,12 @@ const run = async () => {
       const result = await tools.toArray();
       res.send(result);
     });
+    //get tools api
+    app.get("/manageTools", verifyJWT, adminVerify, async (req, res) => {
+      const tools = toolsCollection.find({});
+      const result = await tools.toArray();
+      res.send(result);
+    });
     //get All order api
     app.get("/all-orders", async (req, res) => {
       const tools = purchaseCollection.find({});
